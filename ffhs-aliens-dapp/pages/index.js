@@ -3,14 +3,24 @@ import styles from "../styles/Home.module.css";
 import "bulma/css/bulma.css";
 import Web3 from 'web3'
 import aliensContract from '../blockchain/aliens.js'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function Home() {
 
   const [web3, setWeb3] = useState()
   const [address, setAdress] = useState()
   const [aliensName, setAliensName] = useState("")
-  const [aliensContract, setAliensContract] = useState()
+  const [alContract, setalContract] = useState()
+  const [balancebag, setBalancebag] = useState()
+
+  useEffect(() => {
+    if(alContract) getBag()
+  }, [alContract, balancebag]);
+
+  const getBag = async () => {
+    const bag = await alContract.methods.getBalance().call()
+    setBalancebag(bag)
+  }
 
   const updateAliensName = (event) => {
     setAliensName(event.target.value)
@@ -32,8 +42,8 @@ export default function Home() {
         setAdress(accounts[0])
 
         // create local contract copy
-        const aliensContract = aliensContract(web3)
-        setAliensContract(aliensContract)
+        const ac = aliensContract(web3)
+        setalContract(ac)
 
       } catch(err) {
         console.log(err.message)
@@ -139,8 +149,8 @@ export default function Home() {
                   <div className="card">
                     <div className="card-content">
                       <div className="content">
-                        <h2>Pot</h2>
-                        <p>10 Ehter</p>
+                        <h2>Balance</h2>
+                        <p>{balancebag}</p>
                       </div>
                     </div>
                   </div>
