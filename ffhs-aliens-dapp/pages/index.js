@@ -12,19 +12,39 @@ export default function Home() {
   const [aliensName, setAliensName] = useState("")
   const [alContract, setalContract] = useState()
   const [balancebag, setBalancebag] = useState()
+  const [players, setPlayers] = useState([])
 
   useEffect(() => {
     if(alContract) getBag()
-  }, [alContract, balancebag]);
+    if(alContract) getPlayers()
+  }, [alContract]);
 
   const getBag = async () => {
     const bag = await alContract.methods.getBalance().call()
-    setBalancebag(bag)
+    setBalancebag(web3.utils.fromWei(bag))
+  }
+
+  const getPlayers = async () => {
+    const gamePlayers = await alContract.methods.getPlayers().call()
+    setPlayers(gamePlayers)
   }
 
   const updateAliensName = (event) => {
     setAliensName(event.target.value)
   };
+
+  const handlePlayButton = async () => {
+    try {
+      await alContract.methods.enter().send({
+        from: address,
+        value: '15000000000000000',
+        gas: 300000,
+        gasPrice: null
+    })
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
 
   const connectWalletHandler = async () => {
     // check if metamask is installed
@@ -91,7 +111,7 @@ export default function Home() {
                     </div>
                     <br/> 
                   </div>
-                  <button className="button is-link is-large is-light mt-3">
+                  <button className="button is-link is-large is-light mt-3" onClick={handlePlayButton}>
                     play now
                   </button>
                 </section>
@@ -131,16 +151,19 @@ export default function Home() {
                 <section className="mt-5">
                   <div className="card">
                     <div className="card-content">
-                      <div className="content">
-                        <h2>Players (1)</h2>
-                        <div>
-                          <a
-                            href="https://rinkeby.etherscan.io/address/0x414d4a586a04ddf97b5ff141b4a70ace89c8651d"
-                            target={"_blank"}
-                          >
-                            0x414d4A586a04dDF97B5Ff141b4a70ACe89C8651d
-                          </a>
-                        </div>
+                    <div className="content">
+                        <h2>Players ({players.length})</h2>
+                        <ul className="ml-0">
+                          {
+                            (players && players.length > 0) && players.map((player, index) => {
+                              return <li key={`${player}-${index}`}>
+                                <a href={`https://etherscan.io/address/${player}`} target="_blank">
+                                  {player}
+                                </a>
+                              </li>
+                            })
+                          }
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -150,7 +173,7 @@ export default function Home() {
                     <div className="card-content">
                       <div className="content">
                         <h2>Balance</h2>
-                        <p>{balancebag}</p>
+                        <p>{(balancebag) ? balancebag + " Ether" : 0 + " Ether"}</p>
                       </div>
                     </div>
                   </div>
