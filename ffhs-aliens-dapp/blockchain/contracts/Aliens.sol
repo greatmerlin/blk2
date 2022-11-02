@@ -41,8 +41,6 @@ contract Aliens {
 
         aliensHistory[aliensId] = players[index];
         aliensId++;
-        
-        // reward the winner
 
         // reset the state of the contract
         players = new address payable[](0);

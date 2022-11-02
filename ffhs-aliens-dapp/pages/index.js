@@ -13,10 +13,14 @@ export default function Home() {
   const [alContract, setalContract] = useState()
   const [balancebag, setBalancebag] = useState()
   const [players, setPlayers] = useState([])
+  const [successMessage, setSuccessMessage] = useState("")
+  const [aliensMonitoring, setAliensMonitoring] = useState([])
+  const [aliensId, setAliensId] = useState()
 
   useEffect(() => {
     if(alContract) getBag()
     if(alContract) getPlayers()
+    if(alContract) getAliensID()
   }, [alContract]);
 
   const getBag = async () => {
@@ -44,6 +48,37 @@ export default function Home() {
     } catch (error) {
       console.log(error.message)
     }
+  }
+
+  const handlePickWinner = async () => {
+    try {
+      await alContract.methods.pickWinner().send({
+        from: address,
+        gas: 300000,
+        gasPrice: null
+    })
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
+  const getHistory = async (id) => {
+    // setAliensMonitoring([])
+    // for (let i = parseInt(id); i > 0; i--) {
+    //   const winnerAddress = await alContract.methods.aliensHistory(i)
+    //   const historyObj = {}
+    //   historyObj.id = i
+    //   historyObj.address = winnerAddress
+    //   setAliensMonitoring(aliensMonitoring => [...aliensMonitoring, historyObj])
+    // }
+  }
+
+  const getAliensID = async () => {
+
+    // const localAliensId = await alContract.methods.aliensId.call()
+    // console.log(localAliensId)
+    // setAliensId(localAliensId)
+    // await getHistory(localAliensId)
   }
 
   const connectWalletHandler = async () => {
@@ -119,11 +154,17 @@ export default function Home() {
                   <p>
                     <b>Admin only: Find out who has the craziest aliens name! (pick one randomly) </b>
                   </p>
-                  <button className="button is-primary is-large is-light mt-3">
+                  <button className="button is-primary is-large is-light mt-3" onClick={handlePickWinner}>
                     Randomly pick an aliens name
                   </button>
                   <p>Test save aliens name using hooks: {aliensName}</p>
                 </section>
+                <section>
+                <div className="container has-text-success mt-6">
+                    <h1>{successMessage}</h1>
+                    <p><b>winner!</b></p>
+                </div>
+              </section>
               </div>
               <div className={`${styles.aliensinfo}column is-one-third`}>
                 <section className="mt-5">
@@ -164,7 +205,7 @@ export default function Home() {
                             })
                           }
                         </ul>
-                      </div>
+                      </div>  
                     </div>
                   </div>
                 </section>
