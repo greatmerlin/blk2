@@ -1,114 +1,165 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import "bulma/css/bulma.css";
-import Web3 from 'web3'
-import aliensContract from '../blockchain/aliens.js'
-import { useState, useEffect } from 'react'
+import Web3 from "web3";
+import aliensContract from "../blockchain/aliens.js";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import alien1 from "../Images/alien1.png";
+import alien2 from "../Images/alien2.png";
+import alien3 from "../Images/alien3.png";
+import alien4 from "../Images/alien4.png";
+import alien5 from "../Images/alien5.png";
+import alien6 from "../Images/alien6.png";
+import alien7 from "../Images/alien7.png";
+import alien8 from "../Images/alien8.png";
+import alien9 from "../Images/alien9.png";
 
 export default function Home() {
-
-  const [web3, setWeb3] = useState()
-  const [address, setAdress] = useState()
-  const [aliensName, setAliensName] = useState("")
-  const [alContract, setalContract] = useState()
-  const [balancebag, setBalancebag] = useState()
-  const [players, setPlayers] = useState([])
-  const [successMessage, setSuccessMessage] = useState("")
-  const [aliensMonitoring, setAliensMonitoring] = useState([])
-  const [aliensId, setAliensId] = useState()
+  const [web3, setWeb3] = useState();
+  const [address, setAdress] = useState();
+  const [aliensName, setAliensName] = useState("");
+  const [alContract, setalContract] = useState();
+  const [balancebag, setBalancebag] = useState();
+  const [players, setPlayers] = useState([]);
+  const [flagName, setFlagName] = useState(false);
+  const [aliensFace, setAliensface] = useState();
 
   useEffect(() => {
-    if(alContract) getBag()
-    if(alContract) getPlayers()
-    if(alContract) getAliensID()
+    if (alContract) getBag();
+    if (alContract) getPlayers();
   }, [alContract]);
 
   const getBag = async () => {
-    const bag = await alContract.methods.getBalance().call()
-    setBalancebag(web3.utils.fromWei(bag))
-  }
+    const bag = await alContract.methods.getBalance().call();
+    setBalancebag(web3.utils.fromWei(bag));
+  };
 
   const getPlayers = async () => {
-    const gamePlayers = await alContract.methods.getPlayers().call()
-    setPlayers(gamePlayers)
-  }
-
-  const updateAliensName = (event) => {
-    setAliensName(event.target.value)
+    const gamePlayers = await alContract.methods.getPlayers().call();
+    setPlayers(gamePlayers);
   };
 
   const handlePlayButton = async () => {
     try {
       await alContract.methods.enter().send({
         from: address,
-        value: '15000000000000000',
+        value: "15000000000000000",
         gas: 300000,
-        gasPrice: null
-    })
+        gasPrice: null,
+      });
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
 
   const handlePickWinner = async () => {
     try {
       await alContract.methods.pickWinner().send({
         from: address,
         gas: 300000,
-        gasPrice: null
-    })
+        gasPrice: null,
+      });
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
 
-  const getHistory = async (id) => {
-    // setAliensMonitoring([])
-    // for (let i = parseInt(id); i > 0; i--) {
-    //   const winnerAddress = await alContract.methods.aliensHistory(i)
-    //   const historyObj = {}
-    //   historyObj.id = i
-    //   historyObj.address = winnerAddress
-    //   setAliensMonitoring(aliensMonitoring => [...aliensMonitoring, historyObj])
-    // }
-  }
+  const handleRandomNameButton = async () => {
+    try {
+      const randomNum = await alContract.methods.getRandomNumber().call();
+      const num = randomNum % 9;
 
-  const getAliensID = async () => {
+      const randomNameGenerator = (num) => {
+        let res = "";
+        for (let i = 0; i < num; i++) {
+          const random = Math.floor(Math.random() * 27);
+          res += String.fromCharCode(97 + random);
+        }
+        return res;
+      };
 
-    // const localAliensId = await alContract.methods.aliensId.call()
-    // console.log(localAliensId)
-    // setAliensId(localAliensId)
-    // await getHistory(localAliensId)
-  }
+      const adjectives = [
+        "blue",
+        "smiley",
+        "funny",
+        "smelly",
+        "short",
+        "crazy",
+        "suspicious",
+        "serious",
+        "bored",
+      ];
+      const randomElement = Math.floor(Math.random() * adjectives.length);
+      const aliensArrayTwo = [
+        "ulgi",
+        "correllia",
+        "thorby",
+        "holden",
+        "azan",
+        "liara",
+        "vorian",
+        "allana",
+        "corran",
+      ];
+      // aliens Name
+      const finalName =
+        adjectives[randomElement] +
+        " " +
+        randomNameGenerator(num) +
+        aliensArrayTwo[randomElement];
+
+      const aliensArray = [
+        alien1,
+        alien2,
+        alien3,
+        alien4,
+        alien5,
+        alien6,
+        alien7,
+        alien8,
+        alien9,
+      ];
+      const finalAliensFace = aliensArray[randomElement];
+
+      setAliensName(finalName);
+      setAliensface(finalAliensFace);
+      setFlagName(true);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const connectWalletHandler = async () => {
     // check if metamask is installed
-    if(typeof window !== "undefined" && typeof window.ethereum !== "undefined"){
+    if (
+      typeof window !== "undefined" &&
+      typeof window.ethereum !== "undefined"
+    ) {
       try {
         // request a wallet connection
-        await window.ethereum.request({ method: "eth_requestAccounts"})
+        await window.ethereum.request({ method: "eth_requestAccounts" });
         // create a web3 instance & set as a state
-        const web3 = new Web3(window.ethereum)
-        setWeb3(web3)
+        const web3 = new Web3(window.ethereum);
+        setWeb3(web3);
         // get list of accounts
-        const accounts = await web3.eth.getAccounts()
-        // set acc 1 to our state variable (react state), create a state for addresses, 
+        const accounts = await web3.eth.getAccounts();
+        // set acc 1 to our state variable (react state), create a state for addresses,
         //set it to place 0, array of accounts, grab the first one
-        setAdress(accounts[0])
+        setAdress(accounts[0]);
 
         // create local contract copy
-        const ac = aliensContract(web3)
-        setalContract(ac)
-
-      } catch(err) {
-        console.log(err.message)
+        const ac = aliensContract(web3);
+        setalContract(ac);
+      } catch (err) {
+        console.log(err.message);
       }
     } else {
       // metamask is not installed
-      console.log("please install metamask")
-      alert("metamask is not installed")
+      console.log("please install metamask");
+      alert("metamask is not installed");
     }
-  }
+  };
 
   return (
     <div>
@@ -125,7 +176,9 @@ export default function Home() {
               <h1>FFHS Aliens</h1>
             </div>
             <div className="navbar-end">
-              <button onClick={connectWalletHandler} className="button is-link">connect wallet</button>
+              <button onClick={connectWalletHandler} className="button is-link">
+                connect wallet
+              </button>
             </div>
           </div>
         </nav>
@@ -134,37 +187,48 @@ export default function Home() {
             <div className="columns">
               <div className="column is-two-thirds">
                 <section className="mt-5">
-                  <p>Enter your aliens name and confirm it by sending 0.01 Ether.
-                    <br/>
-                    After that, you will know if it is the best aliens name of this round!
+                  <p>
+                    Enter your aliens name and confirm it by sending 0.01 Ether.
+                    <br />
+                    After that, you will know if it is the best aliens name of
+                    this round!
                   </p>
                   <br />
-                  <div>
-                    <div>
-                      <label>Insert your Aliens name here: </label>
-                      <input type="text" value={aliensName} onChange={updateAliensName} placeholder="Please enter your aliens name" />
-                    </div>
-                    <br/> 
-                  </div>
-                  <button className="button is-link is-large is-light mt-3" onClick={handlePlayButton}>
+                  <button
+                    className="button is-link is-large is-light mt-3"
+                    onClick={handlePlayButton}
+                  >
                     play now
                   </button>
                 </section>
                 <section className="mt-6">
                   <p>
-                    <b>Admin only: Find out who has the craziest aliens name! (pick one randomly) </b>
+                    <b>Admin only: Do sth mister admin! (pick one randomly) </b>
                   </p>
-                  <button className="button is-primary is-large is-light mt-3" onClick={handlePickWinner}>
+                  <button
+                    className="button is-primary is-large is-light mt-3"
+                    onClick={handleRandomNameButton}
+                  >
                     Randomly pick an aliens name
                   </button>
-                  <p>Test save aliens name using hooks: {aliensName}</p>
                 </section>
                 <section>
-                <div className="container has-text-success mt-6">
-                    <h1>{successMessage}</h1>
-                    <p><b>winner!</b></p>
-                </div>
-              </section>
+                  <div className="container has-text-success mt-6">
+                    {flagName ? (
+                      <div>
+                        <b>WoW! You are the notorious "{aliensName}" !!</b>
+                        <div>
+                          <Image
+                            src={aliensFace}
+                            alt="no aliens image for you!"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <p>What could be your name...</p>
+                    )}
+                  </div>
+                </section>
               </div>
               <div className={`${styles.aliensinfo}column is-one-third`}>
                 <section className="mt-5">
@@ -192,20 +256,25 @@ export default function Home() {
                 <section className="mt-5">
                   <div className="card">
                     <div className="card-content">
-                    <div className="content">
+                      <div className="content">
                         <h2>Players ({players.length})</h2>
                         <ul className="ml-0">
-                          {
-                            (players && players.length > 0) && players.map((player, index) => {
-                              return <li key={`${player}-${index}`}>
-                                <a href={`https://etherscan.io/address/${player}`} target="_blank">
-                                  {player}
-                                </a>
-                              </li>
-                            })
-                          }
+                          {players &&
+                            players.length > 0 &&
+                            players.map((player, index) => {
+                              return (
+                                <li key={`${player}-${index}`}>
+                                  <a
+                                    href={`https://etherscan.io/address/${player}`}
+                                    target="_blank"
+                                  >
+                                    {player}
+                                  </a>
+                                </li>
+                              );
+                            })}
                         </ul>
-                      </div>  
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -214,7 +283,9 @@ export default function Home() {
                     <div className="card-content">
                       <div className="content">
                         <h2>Balance</h2>
-                        <p>{(balancebag) ? balancebag + " Ether" : 0 + " Ether"}</p>
+                        <p>
+                          {balancebag ? balancebag + " Ether" : 0 + " Ether"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -226,7 +297,7 @@ export default function Home() {
       </main>
 
       <footer className={styles.footer}>
-        <p>&copy; 2022 Block Explorer</p>
+        <p>&copy; 2022 Theologos Baxevanos FFHS</p>
       </footer>
     </div>
   );
