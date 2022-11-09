@@ -24,6 +24,8 @@ export default function Home() {
   const [players, setPlayers] = useState([]);
   const [flagName, setFlagName] = useState(false);
   const [aliensFace, setAliensface] = useState();
+  const [connected, setConnected] = useState(false);
+  const [notification, setNotification] = useState(false);
 
   useEffect(() => {
     if (alContract) getBag();
@@ -52,70 +54,88 @@ export default function Home() {
       console.log(error.message);
     }
   };
+  
+  async function isConnected() {
+     const accounts = await ethereum.request({method: 'eth_accounts'});       
+     if (accounts.length) {
+        console.log(`You're connected to: ${accounts[0]}`);
+        setConnected(true);
+     } else {
+        setNotification(true);
+     }
+  }
 
   const handleRandomNameButton = async () => {
-    try {
-      const randomNum = await alContract.methods.getRandomNumber().call();
-      const num = randomNum % 9;
-
-      const randomNameGenerator = (num) => {
-        let res = "";
-        for (let i = 0; i < num; i++) {
-          const random = Math.floor(Math.random() * 27);
-          res += String.fromCharCode(97 + random);
-        }
-        return res;
-      };
-
-      const adjectives = [
-        "blue",
-        "smiley",
-        "funny",
-        "smelly",
-        "short",
-        "crazy",
-        "suspicious",
-        "serious",
-        "bored",
-      ];
-      const randomElement = Math.floor(Math.random() * adjectives.length);
-      const aliensArrayTwo = [
-        "ulgi",
-        "correllia",
-        "thorby",
-        "holden",
-        "azan",
-        "liara",
-        "vorian",
-        "allana",
-        "corran",
-      ];
-      // aliens Name
-      const finalName =
-        adjectives[randomElement] +
-        " " +
-        randomNameGenerator(num) +
-        aliensArrayTwo[randomElement];
-
-      const aliensArray = [
-        alien1,
-        alien2,
-        alien3,
-        alien4,
-        alien5,
-        alien6,
-        alien7,
-        alien8,
-        alien9,
-      ];
-      const finalAliensFace = aliensArray[randomElement];
-
-      setAliensName(finalName);
-      setAliensface(finalAliensFace);
-      setFlagName(true);
-    } catch (error) {
-      console.log(error.message);
+    isConnected()
+    if(connected)
+    {
+      try {
+        const randomNum = await alContract.methods.getRandomNumber().call();
+        const num = randomNum % 9;
+  
+        const randomNameGenerator = (num) => {
+          let res = "";
+          for (let i = 0; i < num; i++) {
+            const random = Math.floor(Math.random() * 27);
+            res += String.fromCharCode(97 + random);
+          }
+          return res;
+        };
+  
+        const adjectives = [
+          "blue",
+          "smiley",
+          "funny",
+          "smelly",
+          "short",
+          "crazy",
+          "suspicious",
+          "serious",
+          "bored",
+        ];
+        const randomElement = Math.floor(Math.random() * adjectives.length);
+        const aliensArrayTwo = [
+          "ulgi",
+          "correllia",
+          "thorby",
+          "holden",
+          "azan",
+          "liara",
+          "vorian",
+          "allana",
+          "corran",
+        ];
+        // aliens Name
+        const finalName =
+          adjectives[randomElement] +
+          " " +
+          randomNameGenerator(num) +
+          aliensArrayTwo[randomElement];
+  
+        const aliensArray = [
+          alien1,
+          alien2,
+          alien3,
+          alien4,
+          alien5,
+          alien6,
+          alien7,
+          alien8,
+          alien9,
+        ];
+        const finalAliensFace = aliensArray[randomElement];
+  
+        setAliensName(finalName);
+        setAliensface(finalAliensFace);
+        setFlagName(true);
+      } catch (error) {
+        console.log(error.message);
+      }
+    } else {
+      console.log("is handled with isConnected method")
     }
+
+
   };
 
   const connectWalletHandler = async () => {
@@ -148,6 +168,10 @@ export default function Home() {
       alert("metamask is not installed");
     }
   };
+
+  const closeNot = () => {
+    setNotification(false)
+  }
 
   return (
     <div>
@@ -184,7 +208,16 @@ export default function Home() {
                   </button>
                 </section>
                 <section>
-                  <div className="container has-text-success mt-6">
+                  <br />
+                  {notification ? (
+                    <div className="notification is-danger">
+                    <button onClick={closeNot} className="delete mt-3"></button>
+                     <strong>please log in your metamask account using the 'connect wallet' button to procceed</strong>
+                  </div>
+                  ) :  <p></p>}
+                </section>
+                <section>
+                  <div className="container has-text-info mt-6">
                     {flagName ? (
                       <div>
                         <b>WoW! You are the notorious "{aliensName}" !!</b>
@@ -196,7 +229,7 @@ export default function Home() {
                         </div>
                       </div>
                     ) : (
-                      <p>What could be your name...</p>
+                      <p>Your alien's name and image will appear here...</p>
                     )}
                   </div>
                 </section>
@@ -206,7 +239,7 @@ export default function Home() {
                       Support us with an ETH donation (minimum 0.01 Ether excl.Gas).
                     <br />
                     <button
-                      className="button is-link is-large is-light mt-3"
+                      className="button is-danger is-large is-light mt-3"
                       onClick={handlePlayButton}
                     >
                       donate now
