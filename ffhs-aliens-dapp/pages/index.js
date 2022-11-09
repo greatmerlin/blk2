@@ -53,18 +53,6 @@ export default function Home() {
     }
   };
 
-  const handlePickWinner = async () => {
-    try {
-      await alContract.methods.pickWinner().send({
-        from: address,
-        gas: 300000,
-        gasPrice: null,
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   const handleRandomNameButton = async () => {
     try {
       const randomNum = await alContract.methods.getRandomNumber().call();
@@ -164,19 +152,17 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Alien name selection</title>
+        <title>FFHS Alien name generator</title>
         <meta name="description" content="FFHS Aliens Dapp" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className={styles.main}>
         <nav className="navbar mt-4 mb-4">
           <div className="container">
             <div className="navbar-brand">
-              <h1>FFHS Aliens</h1>
+              <h1 className="title is-1-desktop">FFHS aliens name generator</h1>
             </div>
             <div className="navbar-end">
-              <button onClick={connectWalletHandler} className="button is-link">
+              <button onClick={connectWalletHandler} className="button is-danger">
                 connect wallet
               </button>
             </div>
@@ -186,24 +172,9 @@ export default function Home() {
           <section className="mt-5">
             <div className="columns">
               <div className="column is-two-thirds">
-                <section className="mt-5">
-                  <p>
-                    Enter your aliens name and confirm it by sending 0.01 Ether.
-                    <br />
-                    After that, you will know if it is the best aliens name of
-                    this round!
-                  </p>
-                  <br />
-                  <button
-                    className="button is-link is-large is-light mt-3"
-                    onClick={handlePlayButton}
-                  >
-                    play now
-                  </button>
-                </section>
                 <section className="mt-6">
                   <p>
-                    <b>Admin only: Do sth mister admin! (pick one randomly) </b>
+                    <b>Use our Smart-Contract to generate an awesome random Alien's name!</b>
                   </p>
                   <button
                     className="button is-primary is-large is-light mt-3"
@@ -229,35 +200,26 @@ export default function Home() {
                     )}
                   </div>
                 </section>
+                <div>
+                  <section className="mt-5">
+                  <br />
+                      Support us with an ETH donation (minimum 0.01 Ether excl.Gas).
+                    <br />
+                    <button
+                      className="button is-link is-large is-light mt-3"
+                      onClick={handlePlayButton}
+                    >
+                      donate now
+                    </button>
+                  </section>
+                </div>
               </div>
               <div className={`${styles.aliensinfo}column is-one-third`}>
                 <section className="mt-5">
                   <div className="card">
                     <div className="card-content">
                       <div className="content">
-                        <h2>Aliens History</h2>
-                        <div className="history-entry">
-                          <div>FFHS-Aliens #1 winner:</div>
-                          <div>
-                            <a
-                              href="https://rinkeby.etherscan.io/address/0x414d4a586a04ddf97b5ff141b4a70ace89c8651d"
-                              target={"_blank"}
-                            >
-                              0x414d4A586a04dDF97B5Ff141b4a70ACe89C8651d
-                            </a>
-                          </div>
-                          <div>with the following crazy aliens name:</div>
-                          <div>Zaqroin</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Players ({players.length})</h2>
+                        <h2>Generator used by ({players.length})</h2>
                         <ul className="ml-0">
                           {players &&
                             players.length > 0 &&
@@ -282,7 +244,7 @@ export default function Home() {
                   <div className="card">
                     <div className="card-content">
                       <div className="content">
-                        <h2>Balance</h2>
+                        <h2>Donated so far</h2>
                         <p>
                           {balancebag ? balancebag + " Ether" : 0 + " Ether"}
                         </p>
