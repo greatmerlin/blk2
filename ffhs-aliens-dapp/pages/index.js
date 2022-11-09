@@ -43,16 +43,22 @@ export default function Home() {
   };
 
   const handlePlayButton = async () => {
-    try {
-      await alContract.methods.enter().send({
-        from: address,
-        value: "15000000000000000",
-        gas: 300000,
-        gasPrice: null,
-      });
-    } catch (error) {
-      console.log(error.message);
+    isConnected()
+    if(connected){
+      try {
+        await alContract.methods.enter().send({
+          from: address,
+          value: "15000000000000000",
+          gas: 300000,
+          gasPrice: null,
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+    } else {
+      console.log("is handled with isConnected method")
     }
+
   };
   
   async function isConnected() {
@@ -171,19 +177,19 @@ export default function Home() {
 
   const closeNot = () => {
     setNotification(false)
-  }
+  } 
 
   return (
     <div>
       <Head>
-        <title>FFHS Alien name generator</title>
+        <title>FFHS Aliens</title>
         <meta name="description" content="FFHS Aliens Dapp" />
       </Head>
       <main className={styles.main}>
         <nav className="navbar mt-4 mb-4">
           <div className="container">
             <div className="navbar-brand">
-              <h1 className="title is-1-desktop">FFHS aliens name generator</h1>
+              <h1>FFHS aliens name generator</h1>
             </div>
             <div className="navbar-end">
               <button onClick={connectWalletHandler} className="button is-danger">
