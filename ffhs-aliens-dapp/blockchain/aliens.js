@@ -7,4 +7,4 @@ const aliensContract = web3 => {
     )
 }
 
-export default aliensAbi
+export default aliensContract
